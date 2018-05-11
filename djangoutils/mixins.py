@@ -28,7 +28,10 @@ class GetArgMixin(object):
             value = self.request.query_params.get(name, default)
 
         try:
-            value = _type(value)
+            if isinstance(value, list):
+                value = map(lambda x: _type(x), value)
+            else:
+                value = _type(value)
         except (ValueError, TypeError) as e:
-            raise ArgumentTypeError
+            raise ArgumentTypeError(e.message)
         return value
